@@ -17,11 +17,17 @@ import Witch from '../assets/animation/witch.json';
 import { playSound } from '../helpers/SoundUtility';
 import { useIsFocused } from '@react-navigation/native';
 import { navigate } from '../helpers/NavigationUtil';
+import { selectCurrentPosition } from './../redux/reducers/gameSelectors';
+import { useDispatch, useSelector } from 'react-redux';
+import SoundPlayer from 'react-native-sound-player';
+import { resetGame } from '../redux/reducers/gameSlice';
 
 const HomeScreen = () => {
   const witchX = useSharedValue(-deviceWidth);
   const scaleX = useSharedValue(-1);
   const isFocussed = useIsFocused();
+  const dispatch = useDispatch();
+  const currentPosition = useSelector(selectCurrentPosition);
 
   useEffect(() => {
     if (isFocussed) {
@@ -74,11 +80,24 @@ const HomeScreen = () => {
   ));
 
   const startGame = async (isNew = false) => {
+    SoundPlayer.stop();
+    if (isNew) {
+      dispatch(resetGame());
+    }
     navigate('LudoBoardScreen');
+    playSound('game_start');
   };
 
   const handleNewGamePress = useCallback(() => {
     startGame(true);
+  }, []);
+
+  const handleResumeGame = useCallback(() => {
+    startGame(false);
+  }, []);
+
+  const handleComingSoon = useCallback(() => {
+    Alert.alert('Cooming Soon');
   }, []);
 
   return (
@@ -87,13 +106,11 @@ const HomeScreen = () => {
         <Image source={Logo} style={styles.logoImage} />
       </View>
 
-      {renderButton('New Game', () => {})}
-      {renderButton('V/S CPU', () => {
-        Alert.alert('Coming Soon');
-      })}
-      {renderButton('2 Player', () => {
-        Alert.alert('Coming Soon');
-      })}
+      {currentPosition.length !== 0 &&
+        renderButton('Resume Game', handleResumeGame)}
+      {renderButton('New Game', handleNewGamePress)}
+      {renderButton('V/S CPU', handleComingSoon)}
+      {renderButton('2 Player', handleComingSoon)}
 
       {/* Witch Animation */}
       <Animated.View style={[styles.witchContainer, witchStyle]}>
@@ -126,7 +143,7 @@ const styles = StyleSheet.create({
   imgContainer: {
     width: deviceWidth * 0.6,
     height: deviceHeight * 0.2,
-    marginVertical: 40,
+    marginVertical: 20,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',

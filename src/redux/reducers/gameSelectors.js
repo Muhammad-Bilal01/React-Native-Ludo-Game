@@ -1,5 +1,3 @@
-import { RootState } from '$redux/store';
-
 export const selectCurrentPosition = state => state.game.currentPosition;
 export const selectCurrentPlayerChance = state => state.game.chancePlayer;
 export const selectDiceRolled = state => state.game.isDiceRolled;

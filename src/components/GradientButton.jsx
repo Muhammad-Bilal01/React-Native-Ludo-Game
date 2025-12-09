@@ -2,16 +2,20 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { RFValue } from 'react-native-responsive-fontsize';
 import LinearGradient from 'react-native-linear-gradient';
+import { playSound } from '../helpers/SoundUtility';
 
-const iconSize = RFValue();
+const iconSize = RFValue(12);
 
-const GradientButton = ({ title, onPress, iconColor = '#5be3e' }) => {
+const GradientButton = ({ title, onPress, iconColor = '#d5be3e' }) => {
   return (
     <View style={styles.mainContainer}>
       <TouchableOpacity
         style={styles.btnContainer}
         activeOpacity={0.8}
-        onPress={onPress}
+        onPress={() => {
+          playSound('ui');
+          onPress();
+        }}
       >
         <LinearGradient
           colors={['#4c669f', '#3b5998', '#192f6a']}
@@ -43,7 +47,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowOffset: { width: 1, height: 1 },
     shadowRadius: 10,
-    width: 220,
+    width: 250,
   },
   btnText: {
     color: 'white',
